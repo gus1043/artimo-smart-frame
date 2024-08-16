@@ -35,7 +35,13 @@ android {
 }
 
 dependencies {
+    //레이아웃
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("androidx.fragment:fragment:1.6.0")
     implementation(libs.androidx.core.ktx)
+    //android tv용 leanback library
     implementation("androidx.leanback:leanback:1.0.0")
+    //defaultartfragment의 명화용
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation ("com.google.code.gson:gson:2.8.9")
 }
