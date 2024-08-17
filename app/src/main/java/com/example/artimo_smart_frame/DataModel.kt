@@ -7,6 +7,7 @@ data class DataModel(
         val id: Int = 0,
         val title: String = "",
         val painter: String = "",
-        val image: String = ""
+        val image: String = "",
+        val type: Int = 0
     )
 }

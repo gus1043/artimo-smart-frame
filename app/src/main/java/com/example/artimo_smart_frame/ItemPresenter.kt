@@ -20,12 +20,12 @@ class ItemPresenter : Presenter() {
 
     fun getWidthInPercent(context: Context, percent: Int): Int {
         val width = context.resources.displayMetrics.widthPixels
-        return (width * percent / 40)
+        return (width * percent / 25)
     }
 
     fun getHeightInPercent(context: Context, percent: Int): Int {
         val height = context.resources.displayMetrics.heightPixels
-        return (height* percent / 20)
+        return (height* percent / 15)
     }
 
 
