@@ -7,6 +7,8 @@
 
     <uses-feature android:name="android.hardware.touchscreen"
         android:required="false" />
+    <!--외부 영상 재생-->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:banner="@drawable/lb_card_foreground"
@@ -25,6 +27,7 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity android:name=".TherapyActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
@@ -34,7 +37,7 @@
         <activity android:name=".ArtframeActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
-        <activity android:name=".TherapyframeActivity"
+        <activity android:name=".TherapyGalleryActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
 
