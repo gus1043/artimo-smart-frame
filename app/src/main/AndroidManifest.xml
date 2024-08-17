@@ -31,6 +31,12 @@
         <activity android:name=".DefaultArtActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
+        <activity android:name=".ArtframeActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".TherapyframeActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
 
 
 

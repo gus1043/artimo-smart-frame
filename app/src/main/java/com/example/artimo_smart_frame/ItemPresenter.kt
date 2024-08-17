@@ -1,7 +1,9 @@
 package com.example.artimo_smart_frame
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -34,8 +36,8 @@ class ItemPresenter : Presenter() {
         val art = viewHolder?.view?.findViewById<ImageView>(R.id.art)
 
         content?.let {
-            // Check if the image_path is valid and starts with the expected prefix
             val imagePath = content.image
+            val imageType = content.type
             if (imagePath.startsWith("file:///android_asset/")) {
                 val assetPath = imagePath.removePrefix("file:///android_asset/")
                 val context = viewHolder?.view?.context
@@ -43,19 +45,26 @@ class ItemPresenter : Presenter() {
                 try {
                     // Open the asset file and decode it to a Bitmap
                     val inputStream = context?.assets?.open(assetPath)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    art?.setImageBitmap(bitmap)
+                    val drawable = Drawable.createFromStream(inputStream, null)
+                    art?.setImageDrawable(drawable)
+
+                    // 이미지를 클릭할 때의 동작 설정
+                    art?.setOnClickListener {
+                        val intent = Intent(context, ArtframeActivity::class.java)
+
+                        // 이미지 파일 이름을 전달
+                        intent.putExtra("art", assetPath)
+                        intent.putExtra("type", imageType.toString())
+
+                        context?.startActivity(intent)
+                    }
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    // Handle error: you might want to set a placeholder or show an error message
                 }
             } else {
-                // Handle cases where the path is not valid or is not an asset
-                // You might want to show a placeholder image or an error message
             }
         }
     }
-
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
     }
