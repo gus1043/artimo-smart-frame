@@ -2,6 +2,7 @@ package com.example.artimo_smart_frame
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebView
@@ -9,18 +10,20 @@ import android.widget.Button
 import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
 
-class TherapyActivity : FragmentActivity() {
+class LegacyTherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
     private lateinit var therapyArt: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_therapy)
+        setContentView(R.layout.activity_legacytherapy)
+
+        val videoUrl = intent.getStringExtra("videoUrl")
+        Log.d("ItemTherapyPresenter", "videoUrl: $videoUrl")
 
         therapyArt = findViewById(R.id.therapyart)
         gallarybtn = findViewById(R.id.gallarybtn)
-        val videoURL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        therapyArt.loadUrl(videoURL)
+        therapyArt.loadUrl(videoUrl.toString())
 
 
         gallarybtn.setOnFocusChangeListener { v, hasFocus ->

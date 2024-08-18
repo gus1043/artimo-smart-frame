@@ -7,6 +7,8 @@
 
     <uses-feature android:name="android.hardware.touchscreen"
         android:required="false" />
+    <!--외부 영상 재생-->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:banner="@drawable/lb_card_foreground"
@@ -15,7 +17,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         tools:ignore="GoogleAppIndexingWarning"
-        android:theme="@style/Base.Theme.Artimo_smart_frame">
+        android:theme="@style/Base.Theme.Artimo_smart_frame"
+        android:usesCleartextTraffic="true">
 
         <activity android:name=".MainActivity"
             android:exported="true"
@@ -25,10 +28,20 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity android:name=".TherapyActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
         <activity android:name=".DefaultArtActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".ArtframeActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".TherapyGalleryActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
+        <activity android:name=".LegacyTherapyActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
 

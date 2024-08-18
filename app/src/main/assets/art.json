@@ -4,43 +4,50 @@
       "id": 0,
       "title": "At The Ball (1907)",
       "painter": "Charles Maurin",
-      "image": "file:///android_asset/0_At_The_Ball(1907).jpg"
+      "image": "file:///android_asset/0_At_The_Ball(1907).jpg",
+      "type": 0
     },
     {
       "id": 1,
-      "title": "The old man who lived in a wood Pl 05 (1902)",
-      "painter": "T. Butler-Stoney (English, 1844-1912)",
-      "image": "file:///android_asset/1_The_old_man_who_lived_in_a_wood_Pl05(1902).jpg"
+      "title": "Monsieur touche-a-tout (1852)",
+      "painter": "Edmé Jean Pigal (French, 1798 - 1873)",
+      "image": "file:///android_asset/1_Monsieur_touche_a_tout(1852).jpg",
+      "type": 1
     },
     {
       "id": 2,
-      "title": "Monsieur touche-a-tout (1852)",
-      "painter": "Edmé Jean Pigal (French, 1798 - 1873)",
-      "image": "file:///android_asset/2_Monsieur_touche_a_tout(1852).jpg"
+      "title": "The old man who lived in a wood Pl 05 (1902)",
+      "painter": "T. Butler-Stoney (English, 1844-1912)",
+      "image": "file:///android_asset/2_The_old_man_who_lived_in_a_wood_Pl05(1902).jpg",
+      "type": 0
     },
     {
       "id": 3,
       "title": "Summer – A Pair of Bullfinch",
       "painter": "Harry Bright (English, 1846-1895)",
-      "image": "file:///android_asset/3_Summer_A_Pair_of_Bullfinch.jpg"
+      "image": "file:///android_asset/3_Summer_A_Pair_of_Bullfinch.jpg",
+      "type":1
     },
     {
       "id": 4,
       "title": "Livre_De_Vases(1772-79)",
       "painter": "Gabriel Huquier (French, 1695–1772)",
-      "image": "file:///android_asset/4_Livre_De_Vases(1772-79).jpg"
+      "image": "file:///android_asset/4_Livre_De_Vases(1772-79).jpg",
+      "type":1
     },
     {
       "id": 5,
       "title": "Godstone, London Underground (1915)",
       "painter": "Edward McKnight Kauffer",
-      "image": "file:///android_asset/5_Godstone,_London_Underground(1915).jpg"
+      "image": "file:///android_asset/5_Godstone,_London_Underground(1915).jpg",
+      "type":1
     },
     {
       "id": 6,
       "title": "From the hills above Dunblane (1883)",
       "painter": "Edward Barraud",
-      "image": "file:///android_asset/6_From_the_hills_above_Dunblane(1883).jpg"
+      "image": "file:///android_asset/6_From_the_hills_above_Dunblane(1883).jpg",
+      "type":0
     }
   ]
 }
