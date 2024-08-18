@@ -44,8 +44,7 @@ class TherapyActivity : FragmentActivity() {
         } else {
             // 갤러리 버튼이 보이지 않으면 보이게 하기
             gallarybtn.visibility = View.VISIBLE
-            // 웹뷰의 포커스를 제거
-            therapyArt.clearFocus()
+
             // 웹뷰의 포커스를 제거
             therapyArt.clearFocus()
 
