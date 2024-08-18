@@ -41,6 +41,9 @@
         <activity android:name=".TherapyGalleryActivity"
             android:exported="true"
             android:screenOrientation="landscape"/>
+        <activity android:name=".LegacyTherapyActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"/>
 
 
 

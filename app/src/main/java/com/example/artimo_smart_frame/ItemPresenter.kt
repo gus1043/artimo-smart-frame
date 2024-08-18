@@ -2,7 +2,6 @@ package com.example.artimo_smart_frame
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
