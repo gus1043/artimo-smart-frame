@@ -29,7 +29,7 @@ class ItemTherapyPresenter : Presenter() {
 
     fun getWidthInPercent(context: Context, percent: Int): Int {
         val width = context.resources.displayMetrics.widthPixels
-        return (width * percent / 21)
+        return (width * percent / 22)
     }
 
     fun getHeightInPercent(context: Context, percent: Int): Int {
