@@ -1,5 +1,6 @@
 package com.example.artimo_smart_frame
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
@@ -40,6 +41,7 @@ class MainActivity : FragmentActivity() {
         loadDataFromAssets()
     }
 
+    // 버튼 포커스 시 버튼 크기 확장
     private fun setButtonFocusAnimation(button: ImageButton) {
         button.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -50,6 +52,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    // 현재 json의 최대 id를 sharedpreference에 저장함
     private fun saveMaxId(context: Context, maxId: Int) {
         val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
@@ -62,6 +65,7 @@ class MainActivity : FragmentActivity() {
         return sharedPreferences.getInt("max_id", -1) // 기본값은 -1
     }
 
+    //sharedpreference에 저장된 값과 현재의 값 중 더 큰 값을 비교해서 data 받아옴
     private fun loadDataFromAssets() {
         try {
             val gson = Gson()
@@ -104,19 +108,27 @@ class MainActivity : FragmentActivity() {
     }
 
     private class DownloadTask(val context: Context, val id: Int) : AsyncTask<String, Void, String>() {
+        private lateinit var progressDialog: ProgressDialog
+        // progresdialog로 다운로드 시각화
+        override fun onPreExecute() {
+            super.onPreExecute()
+            // ProgressDialog 초기화 및 설정
+            progressDialog = ProgressDialog(context , R.style.CustomProgressDialog)
+            progressDialog.setMessage("감정 테라피 아트 다운로드 중...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+        }
+
         override fun doInBackground(vararg params: String?): String? {
             val videoUrl = params[0]
             return try {
-                // URL 객체 생성
                 val url = URL(videoUrl)
                 val connection = url.openConnection()
                 connection.connect()
 
-                // 비디오 파일을 내부 저장소에 저장
                 val input = BufferedInputStream(connection.getInputStream())
                 val fileName = "$id.mp4"
                 val fileOutput = context.openFileOutput(fileName, Context.MODE_PRIVATE)
-
 
                 val data = ByteArray(1024)
                 var count: Int
@@ -124,16 +136,13 @@ class MainActivity : FragmentActivity() {
                     fileOutput.write(data, 0, count)
                 }
 
-                // 파일 저장 완료 후, 저장된 파일의 경로를 로그로 출력
                 val savedFile = File(context.filesDir, fileName)
                 Log.d("MainActivity", "파일 저장 위치: ${savedFile.absolutePath}")
                 Log.d("MainActivity", "파일 크기: ${savedFile.length()} bytes")
 
-                // 스트림 닫기
                 fileOutput.flush()
                 fileOutput.close()
                 input.close()
-
 
                 fileName // 저장된 파일 이름 반환
             } catch (e: Exception) {
@@ -143,12 +152,14 @@ class MainActivity : FragmentActivity() {
         }
 
         override fun onPostExecute(result: String?) {
-            // 다운로드 완료 메시지 표시
+            // 다운로드 완료 시 ProgressDialog 닫기
+            progressDialog.dismiss()
+
             if (result != null) {
-                Toast.makeText(context, "Downloaded video with ID: $id", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "다운로드에 완료했습니다.", Toast.LENGTH_SHORT).show()
                 Log.d("MainActivity", "Downloaded video saved as: $result")
             } else {
-                Toast.makeText(context, "Failed to download video with ID: $id", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "다운로드 실패했습니다. ID: $id", Toast.LENGTH_SHORT).show()
             }
         }
     }
