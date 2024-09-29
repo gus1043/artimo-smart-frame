@@ -9,14 +9,18 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.InputStream
 import java.net.URL
 
 class MainActivity : FragmentActivity() {
-
+    private lateinit var therapyApiService: TherapyApiService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,8 +57,8 @@ class MainActivity : FragmentActivity() {
     }
 
     // 현재 json의 최대 id를 sharedpreference에 저장함
-    private fun saveMaxId(context: Context, maxId: Int) {
-        val sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+    private fun saveMaxId(maxId: Int) {
+        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putInt("max_id", maxId)
         editor.apply()
@@ -68,36 +72,44 @@ class MainActivity : FragmentActivity() {
     //sharedpreference에 저장된 값과 현재의 값 중 더 큰 값을 비교해서 data 받아옴
     private fun loadDataFromAssets() {
         try {
-            val gson = Gson()
-            val inputStream: InputStream = assets.open("therapy.json")
-            val jsonString = inputStream.bufferedReader().use { it.readText() }
-            val dataTherapyModel = gson.fromJson(jsonString, DataTherapyModel::class.java)
-
             // SharedPreferences에서 max_id를 불러옴
             val maxIdFromPrefs = getMaxId(this)
 
-            // JSON에서 max_id
-            val maxIdFromJson = dataTherapyModel.result.maxOfOrNull { it.id } ?: -1
+            // Retrofit 초기화
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL) // 기본 URL 설정
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
 
-            // maxIdFromJson 이 prefence꺼 보다 큰 경우
-            if (maxIdFromJson > maxIdFromPrefs) {
-                saveMaxId(this, maxIdFromJson)  //max_id 업데이트
+            therapyApiService = retrofit.create(TherapyApiService::class.java)
 
-                // 각 Result 객체에 대해 비디오를 다운로드하고 저장
-                dataTherapyModel.result.forEach { result ->
-                    if (result.id > maxIdFromPrefs) { // SharedPreferences의 max_id보다 큰 경우
-                        val videoUrl = result.sources.firstOrNull()
-                        videoUrl?.let {
-                            downloadVideo(it, result.id) // result.id 사용
+            lifecycleScope.launch {
+                try {
+                    val dataTherapyModel = therapyApiService.getVideoList()
+
+                    val maxIdFromJson = dataTherapyModel.result.maxOfOrNull { it.id } ?: -1
+
+                    if (maxIdFromJson > maxIdFromPrefs) {
+                        saveMaxId(maxIdFromJson)
+
+                        dataTherapyModel.result.forEach { result ->
+                            Log.d("MainActivity","${result}")
+                            if (result.id > maxIdFromPrefs) {
+                                result.sources.firstOrNull()?.let {
+                                    downloadVideo(it, result.id)
+                                }
+                            }
                         }
+                    } else {
+                        Log.d("MainActivity", "새 비디오 없음.")
                     }
+                } catch (e: Exception) {
+                    Toast.makeText(this@MainActivity, "데이터 로드 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("MainActivity", "Error loading data", e)
                 }
-            } else {
-                Log.d("MainActivity", "새 비디오 없음.")
             }
-
         } catch (e: Exception) {
-            Log.e("MainActivity", "Error reading JSON", e)
+            Log.e("MainActivity", "Error initializing Retrofit", e)
         }
     }
 
