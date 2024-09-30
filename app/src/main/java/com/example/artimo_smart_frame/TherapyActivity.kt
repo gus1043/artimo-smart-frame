@@ -131,6 +131,7 @@ class TherapyActivity : FragmentActivity() {
 
             // 비디오 준비 완료 시 자동 재생을 시작합니다.
             therapyArt.setOnPreparedListener { mediaPlayer ->
+                mediaPlayer.isLooping = true // 비디오를 부드럽게 반복 재생
                 mediaPlayer.start()
             }
         } else {
