@@ -5,29 +5,27 @@ import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import android.provider.MediaStore.Video
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
-import android.webkit.WebView
 import android.widget.Button
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedInputStream
 import java.io.File
-import java.io.InputStream
+import android.os.Handler as AndroidHandler
 import java.net.URL
 
 class TherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
     private lateinit var therapyArt: VideoView
     private lateinit var therapyApiService: TherapyApiService
+    private lateinit var handler: AndroidHandler
+    private val checkInterval: Long = 5000 // 5초 간격
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +35,10 @@ class TherapyActivity : FragmentActivity() {
         gallarybtn = findViewById(R.id.gallarybtn)
 
         // SharedPreferences에서 비디오 번호 불러옴
-        val  max_id = getMaxId(this)
+        val max_id = getMaxId(this)
+
+        //일단 최대번호로 재생
+        playExistingVideo(max_id)
 
         // Retrofit 초기화
         val retrofit = Retrofit.Builder()
@@ -47,39 +48,8 @@ class TherapyActivity : FragmentActivity() {
 
         therapyApiService = retrofit.create(TherapyApiService::class.java)
 
-        lifecycleScope.launch {
-            try {
-                //최신 비디오 주는 api에 연결
-                val dataTherapyModel = therapyApiService.getLatest()
-
-                val maxIdFromJson =  dataTherapyModel.result.id
-                val videoUrl = dataTherapyModel.result.sources
-                val videoId = dataTherapyModel.result.id
-
-                if (maxIdFromJson > max_id) {
-                    saveMaxId(maxIdFromJson)
-
-                    // 비디오 다운로드 및 재생 코드 추가
-                    downloadVideo(videoUrl, videoId)
-                } else {
-                    // 이미 존재하는 비디오 재생
-                    val file = File(filesDir, "${max_id}.mp4") // 파일 경로 생성
-
-                    if (file.exists()) {
-                        val videoUri = Uri.fromFile(file) // File 객체를 Uri로 변환
-                        therapyArt.setVideoURI(videoUri) // VideoView에 URI 설정
-
-                        // 비디오 준비 완료 시 자동 재생을 시작합니다.
-                        therapyArt.setOnPreparedListener { mediaPlayer ->
-                            mediaPlayer.start()
-                        }
-                    } else {
-                        Log.w("LegacyTherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
-                    }}
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error loading data", e)
-            }
-        }
+        handler = AndroidHandler() // Handler 초기화
+        startCheckingForNewVideos(max_id) // 비디오 확인 시작
 
         gallarybtn.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -95,6 +65,79 @@ class TherapyActivity : FragmentActivity() {
             finish()
         }
     }
+
+    private fun startCheckingForNewVideos(maxId: Int) {
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                checkForNewVideo(maxId)
+                handler.postDelayed(this, checkInterval) // 5초 후에 다시 실행
+            }
+        }, checkInterval)
+    }
+
+    private fun checkForNewVideo(maxId: Int) {
+        lifecycleScope.launch {
+            try {
+                // 최신 비디오 주는 api에 연결
+                val dataTherapyModel = therapyApiService.getLatest()
+
+                val maxIdFromJson = dataTherapyModel.result.id
+                val videoUrl = dataTherapyModel.result.sources
+
+                if (maxIdFromJson > maxId) {
+                    saveMaxId(maxIdFromJson)
+                    Log.d("TherapyActivity", "새로운 비디오가 있습니다: ID = $maxIdFromJson") // 로그 출력
+                    // 비디오 다운로드 및 재생 코드 추가
+                    downloadVideo(videoUrl, maxIdFromJson)
+
+                    // 확인 주기를 일시 중지
+                    handler.removeCallbacksAndMessages(null)
+                    // 비디오 재생 후 5초 기다림
+                    handler.postDelayed({
+                        startCheckingForNewVideos(maxIdFromJson) // 새로운 비디오 확인 재시작
+                    }, 5000) // 5초 후 재시작
+                } else {
+                    Log.d("TherapyActivity", "새로운 비디오가 없습니다: ID = $maxId") // 로그 출력
+                    playExistingVideo(maxId)
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error loading data", e)
+            }
+        }
+    }
+
+    private fun playExistingVideo(maxId: Int) {
+        val file = File(filesDir, "$maxId.mp4") // 파일 경로 생성
+
+        if (file.exists()) {
+            val videoUri = Uri.fromFile(file) // File 객체를 Uri로 변환
+            therapyArt.setVideoURI(videoUri) // VideoView에 URI 설정
+
+            // 비디오 준비 완료 시 자동 재생을 시작합니다.
+            therapyArt.setOnPreparedListener { mediaPlayer ->
+                mediaPlayer.start()
+            }
+        } else {
+            Log.w("LegacyTherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
+        }
+    }
+
+    private fun playNewVideo(videoId: Int) {
+        val file = File(filesDir, "$videoId.mp4") // 파일 경로 생성
+
+        if (file.exists()) {
+            val videoUri = Uri.fromFile(file) // File 객체를 Uri로 변환
+            therapyArt.setVideoURI(videoUri) // VideoView에 URI 설정
+
+            // 비디오 준비 완료 시 자동 재생을 시작합니다.
+            therapyArt.setOnPreparedListener { mediaPlayer ->
+                mediaPlayer.start()
+            }
+        } else {
+            Log.w("TherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
+        }
+    }
+
 
     private fun saveMaxId(maxId: Int) {
         val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
@@ -155,8 +198,10 @@ class TherapyActivity : FragmentActivity() {
         override fun onPostExecute(result: String?) {
             // 다운로드 완료 메시지 표시
             if (result != null) {
-                Toast.makeText(context, "Downloaded video with ID: $id", Toast.LENGTH_SHORT).show()
-                Log.d("MainActivity", "Downloaded video saved as: $result")
+                Toast.makeText(context, "새 영상을 다운로드 중입니다!: $id", Toast.LENGTH_SHORT).show() // Toast 메시지로 변경
+                Log.d("TherapyActivity", "Downloaded video saved as: $result")
+
+                (context as TherapyActivity).playNewVideo(id) // 새 비디오 재생 호출
             } else {
                 Toast.makeText(context, "Failed to download video with ID: $id", Toast.LENGTH_SHORT).show()
             }
