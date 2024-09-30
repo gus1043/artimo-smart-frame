@@ -5,7 +5,7 @@ data class DataTherapyModel(
 ) {
     data class Result(
         val id: Int = 0,
-        val sources: List<String> = listOf(),
+        val sources: List<String>,
         val thumb: String = "",
     )
 }

@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+/src/main/res/xml/network_security_config.xml
