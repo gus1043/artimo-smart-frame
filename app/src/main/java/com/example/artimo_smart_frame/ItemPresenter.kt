@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.leanback.widget.Presenter
 import java.io.IOException
 
@@ -33,19 +35,39 @@ class ItemPresenter : Presenter() {
     override fun onBindViewHolder(viewHolder: ViewHolder?, item: Any?) {
         val content = item as? DataModel.Result
         val art = viewHolder?.view?.findViewById<ImageView>(R.id.art)
+        val overlayText = viewHolder?.view?.findViewById<View>(R.id.overlayText)
+        val textView = viewHolder?.view?.findViewById<TextView>(R.id.title)
 
         content?.let {
             val imagePath = content.image
             val imageType = content.type
+            val title = content.title
+            val painter = content.painter
+
+            // title과 painter를 콤마로 연결
+            val combinedText = "$title \n$painter"
+            textView?.text = combinedText // TextView에 설정
+
             if (imagePath.startsWith("file:///android_asset/")) {
                 val assetPath = imagePath.removePrefix("file:///android_asset/")
                 val context = viewHolder?.view?.context
 
                 try {
-                    // Open the asset file and decode it to a Bitmap
+                    // asset 파일 열고 Bitmap으로 디코딩
                     val inputStream = context?.assets?.open(assetPath)
                     val drawable = Drawable.createFromStream(inputStream, null)
                     art?.setImageDrawable(drawable)
+
+                    // 포커스 변경 리스너 설정
+                    art?.setOnFocusChangeListener { _, hasFocus ->
+                        if (hasFocus) {
+                            overlayText?.visibility = View.VISIBLE
+                            textView?.visibility = View.VISIBLE
+                        } else {
+                            overlayText?.visibility = View.GONE
+                            textView?.visibility = View.GONE
+                        }
+                    }
 
                     // 이미지를 클릭할 때의 동작 설정
                     art?.setOnClickListener {
@@ -60,10 +82,10 @@ class ItemPresenter : Presenter() {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-            } else {
             }
         }
     }
+
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
     }

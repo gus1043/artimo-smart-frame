@@ -20,4 +20,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="MissingConstraints" />
 
+    <!-- 검은 반투명한 배경 -->
+    <View
+        android:id="@+id/overlayText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/overlay_gradient"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/art"
+        app:layout_constraintBottom_toBottomOf="@+id/art"
+        app:layout_constraintStart_toStartOf="@+id/art"
+        app:layout_constraintEnd_toEndOf="@+id/art" />
+
+    <TextView
+    android:id="@+id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="제목 입력"
+    android:textSize="16sp"
+    android:textColor="#FFFFFF"
+    android:padding="8dp"
+    android:visibility="gone"
+    android:layout_marginBottom="16dp"
+    app:layout_constraintBottom_toBottomOf="@+id/overlayText"
+    app:layout_constraintStart_toStartOf="@+id/overlayText"
+    app:layout_constraintEnd_toEndOf="@+id/overlayText"
+    tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
