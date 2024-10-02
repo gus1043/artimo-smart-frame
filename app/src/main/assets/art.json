@@ -30,16 +30,16 @@
     },
     {
       "id": 4,
-      "title": "Livre_De_Vases(1772-79)",
-      "painter": "Gabriel Huquier (French, 1695–1772)",
-      "image": "file:///android_asset/4_Livre_De_Vases(1772-79).jpg",
+      "title": "Face de cheminée…. (1907)",
+      "painter": "Georges Rémon (French, 1889-1963)",
+      "image": "file:///android_asset/4_Face de cheminée…. (1907).jpg",
       "type":1
     },
     {
       "id": 5,
-      "title": "Godstone, London Underground (1915)",
-      "painter": "Edward McKnight Kauffer",
-      "image": "file:///android_asset/5_Godstone,_London_Underground(1915).jpg",
+      "title": "Livre_De_Vases(1772-79)",
+      "painter": "Gabriel Huquier (French, 1695–1772)",
+      "image": "file:///android_asset/5_Livre_De_Vases(1772-79).jpg",
       "type":1
     },
     {
@@ -47,6 +47,21 @@
       "title": "From the hills above Dunblane (1883)",
       "painter": "Edward Barraud",
       "image": "file:///android_asset/6_From_the_hills_above_Dunblane(1883).jpg",
+      "type":0
+    },
+
+    {
+      "id": 7,
+      "title": "Godstone, London Underground (1915)",
+      "painter": "Edward McKnight Kauffer",
+      "image": "file:///android_asset/7_Godstone,_London_Underground(1915).jpg",
+      "type":1
+    },
+    {
+      "id": 8,
+      "title": "Floral design for printed textiles III (1800–1818)",
+      "painter": "Anonymous",
+      "image": "file:///android_asset/8_Floral design for printed textiles III (1800–1818).jpg",
       "type":0
     }
   ]
