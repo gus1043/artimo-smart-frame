@@ -106,20 +106,12 @@ class ItemTherapyPresenter : Presenter() {
                 Log.d("ItemTherapyPresenter", "videoUrl: $file") // URL 로그 확인
 
                 if (activity != null && file.exists()) {
-                    //IoT 제어
-                    CoroutineScope(Dispatchers.IO).launch {
-                        // IoT control
-                        processIoT(content.id)
-
-                        // After completing the IoT process, switch back to the main thread to start the new activity
-                        withContext(Dispatchers.Main) {
-                            val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
-                                putExtra("file", file.toString())
-                            }
-                            activity.startActivity(intent)
-                            activity.finish()
-                        }
+                    val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
+                        putExtra("file", file.toString())
+                        putExtra("id", content.id)
                     }
+                    activity.startActivity(intent)
+                    activity.finish()
                 } else {
                     if (activity == null) {
                         Log.e("ItemTherapyPresenter", "Activity is null")
@@ -162,37 +154,6 @@ class ItemTherapyPresenter : Presenter() {
         return outputFormat.format(date)
     }
 
-    //IoT 제어 API 연결
-    private suspend fun processIoT(diaryId: Int) {
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(2, TimeUnit.MINUTES)
-            .readTimeout(2, TimeUnit.MINUTES)
-            .writeTimeout(2, TimeUnit.MINUTES)
-            .build()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(TherapyApiService::class.java)
-
-        try {
-            val apiResponse = apiService.setIoT(diaryId.toString())
-            if (apiResponse.isSuccessful) {
-                Log.d("SetIoT", "이미지 생성 성공: ${apiResponse.body()}")
-            } else {
-                Log.d("SetIoT", "이미지 생성 실패: ${apiResponse.errorBody()?.string()}")
-            }
-        } catch (e: IOException) {
-            Log.d("SetIoT", "Network error: ${e.message}")
-        } catch (e: HttpException) {
-            Log.d("SetIoT", "HTTP error: ${e.message}")
-        } catch (e: Exception) {
-            Log.d("SetIoT", "Unknown error: ${e.message}")
-        }
-
-    }
 
 }

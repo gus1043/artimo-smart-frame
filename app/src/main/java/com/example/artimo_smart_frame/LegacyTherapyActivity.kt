@@ -10,7 +10,16 @@ import android.webkit.WebView
 import android.widget.Button
 import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class LegacyTherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
@@ -21,7 +30,8 @@ class LegacyTherapyActivity : FragmentActivity() {
         setContentView(R.layout.activity_legacytherapy)
 
         val file = intent.getStringExtra("file")
-        Log.d("LegacyTherapyActivity", "file: $file")
+        val id = intent.getIntExtra("id", -1)
+        Log.d("LegacyTherapyActivity", "file: $file, id: $id")
 
         therapyArt = findViewById(R.id.therapyart)
         gallarybtn = findViewById(R.id.gallarybtn)
@@ -36,6 +46,13 @@ class LegacyTherapyActivity : FragmentActivity() {
                 // 비디오 준비 완료 시 자동 재생을 시작합니다.
                 therapyArt.setOnPreparedListener { mediaPlayer ->
                     mediaPlayer.start()
+
+                    //IoT 제어
+                    CoroutineScope(Dispatchers.IO).launch {
+                        // IoT control
+                         processIoT(id)
+
+                    }
                 }
 
                 // 비디오가 끝났을 때 반복 재생
@@ -64,6 +81,39 @@ class LegacyTherapyActivity : FragmentActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    //IoT 제어 API 연결
+    private suspend fun processIoT(diaryId: Int) {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(TherapyApiService::class.java)
+
+        try {
+            val apiResponse = apiService.setIoT(diaryId.toString())
+            if (apiResponse.isSuccessful) {
+                Log.d("SetIoT", "이미지 생성 성공: ${apiResponse.body()}")
+            } else {
+                Log.d("SetIoT", "이미지 생성 실패: ${apiResponse.errorBody()?.string()}")
+            }
+        } catch (e: IOException) {
+            Log.d("SetIoT", "Network error: ${e.message}")
+        } catch (e: HttpException) {
+            Log.d("SetIoT", "HTTP error: ${e.message}")
+        } catch (e: Exception) {
+            Log.d("SetIoT", "Unknown error: ${e.message}")
+        }
+
     }
 
     override fun onBackPressed() {
