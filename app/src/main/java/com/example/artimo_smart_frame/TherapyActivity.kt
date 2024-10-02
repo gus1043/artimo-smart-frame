@@ -12,13 +12,20 @@ import android.widget.Toast
 import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.IOException
 import android.os.Handler as AndroidHandler
 import java.net.URL
+import java.util.concurrent.TimeUnit
 
 class TherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
@@ -117,6 +124,12 @@ class TherapyActivity : FragmentActivity() {
             // 비디오 준비 완료 시 자동 재생을 시작합니다.
             therapyArt.setOnPreparedListener { mediaPlayer ->
                 mediaPlayer.start()
+
+                //IoT 제어
+                CoroutineScope(Dispatchers.IO).launch {
+                    // IoT control
+                    processIoT(maxId)
+                }
             }
         } else {
             Log.w("LegacyTherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
@@ -134,6 +147,11 @@ class TherapyActivity : FragmentActivity() {
             therapyArt.setOnPreparedListener { mediaPlayer ->
                 mediaPlayer.isLooping = true // 비디오를 부드럽게 반복 재생
                 mediaPlayer.start()
+                //IoT 제어
+                CoroutineScope(Dispatchers.IO).launch {
+                    // IoT control
+                    processIoT(videoId)
+                }
             }
         } else {
             Log.w("TherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
@@ -156,6 +174,37 @@ class TherapyActivity : FragmentActivity() {
     private fun downloadVideo(videoUrl: String, id: Int) {
         // 비디오 다운로드를 비동기로 처리
         DownloadTask(this, id).execute(videoUrl)
+    }
+
+    private suspend fun processIoT(diaryId: Int) {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(TherapyApiService::class.java)
+
+        try {
+            val apiResponse = apiService.setIoT(diaryId.toString())
+            if (apiResponse.isSuccessful) {
+                Log.d("SetIoT", "이미지 생성 성공: ${apiResponse.body()}")
+            } else {
+                Log.d("SetIoT", "이미지 생성 실패: ${apiResponse.errorBody()?.string()}")
+            }
+        } catch (e: IOException) {
+            Log.d("SetIoT", "Network error: ${e.message}")
+        } catch (e: HttpException) {
+            Log.d("SetIoT", "HTTP error: ${e.message}")
+        } catch (e: Exception) {
+            Log.d("SetIoT", "Unknown error: ${e.message}")
+        }
     }
 
     private class DownloadTask(val context: Context, val id: Int) : AsyncTask<String, Void, String>() {
