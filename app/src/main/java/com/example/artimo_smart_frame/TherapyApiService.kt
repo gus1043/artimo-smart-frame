@@ -20,5 +20,8 @@ interface TherapyApiService {
 
     @GET("diary/latest")
     suspend fun getLatest(): LatestTherapyModel
+
+    @POST("diary/set-light-color/{id}")
+    suspend fun setIoT(@Path("id") id: String): Response<String>
 }
 

@@ -32,7 +32,7 @@ class DefaultArtFragment : RowsSupportFragment() {
         }
 
         // 결과의 제목으로 HeaderItem 생성
-        val headerItem = HeaderItem(0, "명화 선택하기") // 필요에 따라 제목 변경
+        val headerItem = HeaderItem(0, "명화 갤러리") // 필요에 따라 제목 변경
 
         // ListRow 생성
         val listRow = ListRow(headerItem, arrayObjectAdapter)

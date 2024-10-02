@@ -15,7 +15,20 @@ import android.widget.VideoView
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import retrofit2.HttpException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class ItemTherapyPresenter : Presenter() {
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
@@ -51,6 +64,7 @@ class ItemTherapyPresenter : Presenter() {
             val thumbnailUrl = content.thumb
             Glide.with(viewHolder.view.context)
                 .load(thumbnailUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(thumbnail)
 
             thumbnail.setOnFocusChangeListener { v, hasFocus ->
@@ -62,6 +76,10 @@ class ItemTherapyPresenter : Presenter() {
                     framebtn.visibility = View.GONE
                 }
             }
+
+            //버튼 텍스트에 날짜 추가
+            val formattedDate = formatDate(content.createdAt)
+            framebtn.text = "$formattedDate 미디어 아트를 스마트 액자에 적용"
 
             // 비디오 URL을 가져옴
             val context = viewHolder.view.context
@@ -88,11 +106,20 @@ class ItemTherapyPresenter : Presenter() {
                 Log.d("ItemTherapyPresenter", "videoUrl: $file") // URL 로그 확인
 
                 if (activity != null && file.exists()) {
-                    val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
-                        putExtra("file", file.toString())
+                    //IoT 제어
+                    CoroutineScope(Dispatchers.IO).launch {
+                        // IoT control
+                        processIoT(content.id)
+
+                        // After completing the IoT process, switch back to the main thread to start the new activity
+                        withContext(Dispatchers.Main) {
+                            val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
+                                putExtra("file", file.toString())
+                            }
+                            activity.startActivity(intent)
+                            activity.finish()
+                        }
                     }
-                    activity.startActivity(intent)
-                    activity.finish()
                 } else {
                     if (activity == null) {
                         Log.e("ItemTherapyPresenter", "Activity is null")
@@ -110,13 +137,62 @@ class ItemTherapyPresenter : Presenter() {
                     button.setTextColor(Color.parseColor("#FFFF00"))
                 } else {
                     // 포커스가 없을 때 기본 배경으로 변경
-                    button.setTextColor(ContextCompat.getColor(button.context, R.color.brand_white)) // 원래 배경 색상으로 변경
+                    button.setTextColor(
+                        ContextCompat.getColor(
+                            button.context,
+                                R.color.brand_white
+                        )
+                    )
                 }
             }
         }
-
     }
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
+    }
+
+    fun formatDate(inputDate: String): String {
+        // 입력 형식에 맞는 SimpleDateFormat 정의
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        // 출력 형식 정의
+        val outputFormat = SimpleDateFormat("M/d", Locale.getDefault())
+
+        // 문자열을 Date 객체로 변환
+        val date = inputFormat.parse(inputDate)
+        // 원하는 형식으로 출력
+        return outputFormat.format(date)
+    }
+
+    //IoT 제어 API 연결
+    private suspend fun processIoT(diaryId: Int) {
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.MINUTES)
+            .readTimeout(2, TimeUnit.MINUTES)
+            .writeTimeout(2, TimeUnit.MINUTES)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(TherapyApiService::class.java)
+
+        try {
+            val apiResponse = apiService.setIoT(diaryId.toString())
+            if (apiResponse.isSuccessful) {
+                Log.d("SetIoT", "이미지 생성 성공: ${apiResponse.body()}")
+            } else {
+                Log.d("SetIoT", "이미지 생성 실패: ${apiResponse.errorBody()?.string()}")
+            }
+        } catch (e: IOException) {
+            Log.d("SetIoT", "Network error: ${e.message}")
+        } catch (e: HttpException) {
+            Log.d("SetIoT", "HTTP error: ${e.message}")
+        } catch (e: Exception) {
+            Log.d("SetIoT", "Unknown error: ${e.message}")
+        }
+
     }
 
 }
