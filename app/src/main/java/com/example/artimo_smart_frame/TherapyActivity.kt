@@ -80,13 +80,14 @@ class TherapyActivity : FragmentActivity() {
             try {
                 // 최신 비디오 주는 api에 연결
                 val dataTherapyModel = therapyApiService.getLatest()
+                Log.d("TherapyActivity", "API Response: $dataTherapyModel")
 
                 val maxIdFromJson = dataTherapyModel.result.id
                 val videoUrl = dataTherapyModel.result.sources
 
                 if (maxIdFromJson > maxId) {
                     saveMaxId(maxIdFromJson)
-                    Log.d("TherapyActivity", "새로운 비디오가 있습니다: ID = $maxIdFromJson") // 로그 출력
+                    Log.d("TherapyActivity", "새로운 비디오가 있습니다: ID = $maxIdFromJson, uri = $videoUrl") // 로그 출력
                     // 비디오 다운로드 및 재생 코드 추가
                     downloadVideo(videoUrl, maxIdFromJson)
 
