@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit
 class TherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
     private lateinit var therapyArt: VideoView
+    private lateinit var overlay: View
     private lateinit var therapyApiService: TherapyApiService
     private lateinit var handler: AndroidHandler
     private val checkInterval: Long = 5000 // 5초 간격
@@ -40,6 +41,7 @@ class TherapyActivity : FragmentActivity() {
 
         therapyArt = findViewById(R.id.therapyart)
         gallarybtn = findViewById(R.id.gallarybtn)
+        overlay = findViewById(R.id.overlay) // 투명한 검은 배경
 
         // SharedPreferences에서 비디오 번호 불러옴
         val max_id = getMaxId(this)
@@ -260,19 +262,19 @@ class TherapyActivity : FragmentActivity() {
     }
 
     override fun onBackPressed() {
-        // 갤러리 버튼이 보이면 뒤로 가기
-        if (gallarybtn.visibility == View.VISIBLE) {
-            super.onBackPressed() // 기본 뒤로 가기 동작 수행
-            finish()
-        } else {
-            // 갤러리 버튼이 보이지 않으면 보이게 하기
+        // 검은 배경과 버튼이 숨겨져 있는 상태라면 나타나게 함
+        if (gallarybtn.visibility == View.GONE && overlay.visibility == View.GONE) {
+            overlay.visibility = View.VISIBLE
             gallarybtn.visibility = View.VISIBLE
 
-            // 웹뷰의 포커스를 제거
+            // VideoView 포커스 제거 후 버튼에 포커스 설정
             therapyArt.clearFocus()
-
-            // 버튼에 포커스 설정
             gallarybtn.requestFocus()
+        } else {
+            // 검은 배경과 버튼이 보이면 숨기고 기본 뒤로 가기 동작 수행
+            overlay.visibility = View.GONE
+            gallarybtn.visibility = View.GONE
+            super.onBackPressed()
         }
     }
 }
