@@ -6,21 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".TherapyActivity">
 
-    <Button
-        android:id="@+id/gallarybtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="갤러리 보러가기"
-        android:visibility="gone"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:background="@color/brand_white"
-        android:padding="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+    <!-- VideoView -->
     <VideoView
         android:id="@+id/therapyart"
         android:layout_width="match_parent"
@@ -30,6 +16,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:scaleType="fitXY"/>
+
+    <!-- 투명도 50%의 검은 화면 -->
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone" />
+
+    <!-- 가운데 버튼 배치 -->
+    <Button
+        android:id="@+id/gallarybtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="미디어 아트 히스토리"
+        android:visibility="gone"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/rounded_button_background"
+        android:padding="16dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:elevation="8dp"
+        android:layout_gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,18 +32,18 @@
         app:layout_constraintStart_toStartOf="@+id/art"
         app:layout_constraintEnd_toEndOf="@+id/art" />
 
-    <TextView
-    android:id="@+id/title"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="제목 입력"
-    android:textSize="16sp"
-    android:textColor="#FFFFFF"
-    android:padding="8dp"
-    android:visibility="gone"
-    android:layout_marginBottom="16dp"
-    app:layout_constraintBottom_toBottomOf="@+id/overlayText"
-    app:layout_constraintStart_toStartOf="@+id/overlayText"
-    app:layout_constraintEnd_toEndOf="@+id/overlayText"
-    tools:ignore="MissingConstraints" />
+        <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="제목 입력"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/overlayText"
+        app:layout_constraintStart_toStartOf="@+id/overlayText"
+        app:layout_constraintEnd_toEndOf="@+id/overlayText"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
