@@ -2,9 +2,12 @@ package com.example.artimo_smart_frame
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -50,5 +53,23 @@ class TherapyGalleryActivity : FragmentActivity() {
         } catch (e: Exception) {
             Log.e("TherapyGalleryActivity", "Error reading JSON", e)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // 비디오 재생 중지
+        val art = findViewById<VideoView>(R.id.art)
+        art?.stopPlayback()
+
+        // Glide 리소스 해제
+        val thumbnail = findViewById<ImageView>(R.id.thumbnail)
+        Glide.with(this).clear(thumbnail)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // 추가 리소스 해제
+        val art = findViewById<VideoView>(R.id.art)
+        art?.suspend()
     }
 }

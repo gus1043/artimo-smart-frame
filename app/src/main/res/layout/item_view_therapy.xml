@@ -14,49 +14,81 @@
         android:orientation="vertical">
 
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9">
+            android:layout_weight="9"
+            android:elevation="8dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
+            <!-- ImageView -->
             <ImageView
                 android:id="@+id/thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="visible"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:padding="50dp"
                 android:background="@drawable/border_fill_white"
+                android:scaleX="0.9"
+                android:scaleY="0.9"
                 tools:ignore="MissingConstraints" />
 
+            <!-- VideoView -->
             <VideoView
                 android:id="@+id/art"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:visibility="gone"
+                android:focusableInTouchMode="true"
+                android:layout_gravity="center"
+                android:padding="30dp"
+                android:scaleX="0.7"
+                android:scaleY="0.7" />
+
+            <!-- 반투명 오버레이 -->
+            <View
+                android:id="@+id/overlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:background="@drawable/border"
+                android:background="@drawable/overlay_gradient"
+                android:visibility="gone"
+                android:scaleX="0.9"
+                android:scaleY="0.9"/>
+
+            <TextView
+                android:id="@+id/overlayText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xxxxxx"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
                 android:layout_gravity="center"
-                android:padding="50dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:layout_marginTop="105dp"/>
 
         </FrameLayout>
 
-        <Button
-            android:id="@+id/framebtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="스마트액자에 적용"
-            android:visibility="gone"
-            android:focusable="true"
-            android:layout_weight="1"
-            android:focusableInTouchMode="true"
-            android:textSize="20sp"
-            android:background="@color/brand_brown"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:textColor="@color/brand_white"/>
-
+        <!-- Button -->
+<!--        <Button-->
+<!--            android:id="@+id/framebtn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="스마트 액자에 적용"-->
+<!--            android:visibility="gone"-->
+<!--            android:focusable="true"-->
+<!--            android:layout_weight="1"-->
+<!--            android:focusableInTouchMode="true"-->
+<!--            android:textSize="20sp"-->
+<!--            android:background="@color/brand_brown"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:scaleX="0.9"-->
+<!--            android:scaleY="0.9"-->
+<!--            android:textColor="@color/brand_white"/>-->
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -9,28 +9,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.VideoView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.Presenter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import retrofit2.HttpException
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class ItemTherapyPresenter : Presenter() {
+
     override fun onCreateViewHolder(parent: ViewGroup?): ViewHolder {
         val view = LayoutInflater.from(requireNotNull(parent).context).inflate(R.layout.item_view_therapy, parent, false)
 
@@ -50,39 +39,73 @@ class ItemTherapyPresenter : Presenter() {
         return (height* percent / 17)
     }
 
-
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
         val content = item as? DataTherapyModel.Result ?: return
 
+        val frameLayout = viewHolder.view.findViewById<FrameLayout>(R.id.frameLayout)
         val art = viewHolder.view.findViewById<VideoView>(R.id.art)
         val thumbnail = viewHolder.view.findViewById<ImageView>(R.id.thumbnail)
-        val framebtn = viewHolder.view.findViewById<Button>(R.id.framebtn)
+        val overlay = viewHolder.view.findViewById<View>(R.id.overlay)
+        val overlayText = viewHolder.view.findViewById<TextView>(R.id.overlayText)
 
-        content?.let {
+        val context = viewHolder.view.context
 
+        // Activity가 파괴되지 않았는지 확인
+        if (context is Activity && !context.isDestroyed && !context.isFinishing) {
             // 썸네일 이미지를 로드
             val thumbnailUrl = content.thumb
-            Glide.with(viewHolder.view.context)
+            Glide.with(context)
                 .load(thumbnailUrl)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(thumbnail)
 
-            thumbnail.setOnFocusChangeListener { v, hasFocus ->
+            // FrameLayout에 포커스 이벤트 처리
+            frameLayout.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
+                    thumbnail.setImageDrawable(null)
                     art.visibility = View.VISIBLE
-                    framebtn.visibility = View.VISIBLE
+                    overlay.visibility = View.VISIBLE
+                    overlayText.visibility = View.VISIBLE
+
+                    // 확대 애니메이션 (팝업 효과)
+                    frameLayout.animate()
+                        .scaleX(1.1f) // 약간 확대
+                        .scaleY(1.1f)
+                        .setDuration(300) // 애니메이션 지속 시간
+                        .start()
+
                 } else {
+
+                    // 축소 애니메이션 (원래 크기로 복원)
+                    frameLayout.animate()
+                        .scaleX(1.0f) // 원래 크기로 복원
+                        .scaleY(1.0f)
+                        .setDuration(300)
+                        .start()
+
+                    // 포커스를 잃었을 때 VideoView를 중지하고 숨김
+                    art.stopPlayback() // 비디오 재생 중지
                     art.visibility = View.GONE
-                    framebtn.visibility = View.GONE
+
+                    // 썸네일 이미지 다시 로드
+                    if (context is Activity && !context.isDestroyed && !context.isFinishing) {
+                        Glide.with(thumbnail.context)
+                            .load(content.thumb)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(thumbnail)
+
+                        // 오버레이와 텍스트 숨김
+                        overlay.visibility = View.GONE
+                        overlayText.visibility = View.GONE
+                    }
                 }
             }
 
-            //버튼 텍스트에 날짜 추가
+            //텍스트에 날짜
             val formattedDate = formatDate(content.createdAt)
-            framebtn.text = "$formattedDate 미디어 아트를 스마트 액자에 적용"
+            overlayText.text = "$formattedDate 의 테라피 아트"
 
             // 비디오 URL을 가져옴
-            val context = viewHolder.view.context
             val file = File(context.filesDir, "${content.id}.mp4") // 내부 저장소에서 비디오 파일 찾기
             Log.d("ItemTherapyPresenter", "비디오 파일 : $file")
             if (file.exists()) {
@@ -98,10 +121,8 @@ class ItemTherapyPresenter : Presenter() {
             }
 
 
-            thumbnail.setOnClickListener {
-            }
-
-            framebtn.setOnClickListener {
+            // 클릭 이벤트 처리
+            frameLayout.setOnClickListener {
                 val activity = viewHolder.view.context as? Activity
                 Log.d("ItemTherapyPresenter", "videoUrl: $file") // URL 로그 확인
 
@@ -117,26 +138,47 @@ class ItemTherapyPresenter : Presenter() {
                         Log.e("ItemTherapyPresenter", "Activity is null")
                     }
                     if (!file.exists()) {
-                        Log.e("ItemTherapyPresenter", "Video URL is null or empty")
+                        Log.e("ItemTherapyPresenter", "Video file does not exist: $file")
                     }
                 }
             }
 
-            framebtn.setOnFocusChangeListener { v, hasFocus ->
-                val button = v as Button
-                if (hasFocus) {
-                    // 포커스가 있을 때 framebtn의 배경 변경
-                    button.setTextColor(Color.parseColor("#FFFF00"))
-                } else {
-                    // 포커스가 없을 때 기본 배경으로 변경
-                    button.setTextColor(
-                        ContextCompat.getColor(
-                            button.context,
-                                R.color.brand_white
-                        )
-                    )
-                }
-            }
+//            framebtn.setOnClickListener {
+//                val activity = viewHolder.view.context as? Activity
+//                Log.d("ItemTherapyPresenter", "videoUrl: $file") // URL 로그 확인
+//
+//                if (activity != null && file.exists()) {
+//                    val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
+//                        putExtra("file", file.toString())
+//                        putExtra("id", content.id)
+//                    }
+//                    activity.startActivity(intent)
+//                    activity.finish()
+//                } else {
+//                    if (activity == null) {
+//                        Log.e("ItemTherapyPresenter", "Activity is null")
+//                    }
+//                    if (!file.exists()) {
+//                        Log.e("ItemTherapyPresenter", "Video URL is null or empty")
+//                    }
+//                }
+//            }
+
+//            framebtn.setOnFocusChangeListener { v, hasFocus ->
+//                val button = v as Button
+//                if (hasFocus) {
+//                    // 포커스가 있을 때 framebtn의 배경 변경
+//                    button.setTextColor(Color.parseColor("#FFFF00"))
+//                } else {
+//                    // 포커스가 없을 때 기본 배경으로 변경
+//                    button.setTextColor(
+//                        ContextCompat.getColor(
+//                            button.context,
+//                                R.color.brand_white
+//                        )
+//                    )
+//                }
+//            }
         }
     }
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
