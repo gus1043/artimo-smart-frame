@@ -11,29 +11,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.25" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.1" />
+        app:layout_constraintGuide_percent="0.005" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.06" />
+        app:layout_constraintGuide_percent="0.04" />
 
     <ImageView
         android:id="@+id/logo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:src="@drawable/logo"
-        app:layout_constraintHeight_percent="0.2"
-        app:layout_constraintWidth_percent="0.2"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintWidth_percent="0.25"
         app:layout_constraintTop_toTopOf="@id/guideline_top"
         app:layout_constraintBottom_toTopOf="@id/therapybtn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,13 +46,13 @@
         android:scaleType="fitCenter"
         android:src="@drawable/therapy_btn"
         android:background="@android:color/transparent"
-        app:layout_constraintWidth_percent="0.2"
-        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.22"
+        app:layout_constraintHeight_percent="0.32"
         app:layout_constraintTop_toBottomOf="@id/logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/defaultartbtn"
-        android:contentDescription="감정 테라피 아트"/>
+        android:contentDescription="테라피 아트"/>
 
     <ImageButton
         android:id="@+id/defaultartbtn"
@@ -61,8 +61,8 @@
         android:scaleType="fitCenter"
         android:src="@drawable/defaultart_btn"
         android:background="@android:color/transparent"
-        app:layout_constraintWidth_percent="0.2"
-        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintWidth_percent="0.22"
+        app:layout_constraintHeight_percent="0.32"
         app:layout_constraintTop_toBottomOf="@id/logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/therapybtn"

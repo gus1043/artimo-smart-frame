@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brand_brown">#453131</color>
-    <color name="brand_white">#EDEDED</color>
+    <color name="brand_brown">#212730</color>
+    <color name="brand_white">#F2F3F6</color>
     <color name="black">#000000</color>
 </resources>
