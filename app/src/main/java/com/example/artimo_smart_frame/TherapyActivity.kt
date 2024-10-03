@@ -6,8 +6,11 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.fragment.app.FragmentActivity
@@ -33,7 +36,7 @@ class TherapyActivity : FragmentActivity() {
     private lateinit var overlay: View
     private lateinit var therapyApiService: TherapyApiService
     private lateinit var handler: AndroidHandler
-    private val checkInterval: Long = 5000 // 5초 간격
+    private val checkInterval: Long = 3500 // 3.5초 간격
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,10 +105,10 @@ class TherapyActivity : FragmentActivity() {
 
                     // 확인 주기를 일시 중지
                     handler.removeCallbacksAndMessages(null)
-                    // 비디오 재생 후 5초 기다림
+                    // 비디오 재생 후 3.5초 기다림
                     handler.postDelayed({
                         startCheckingForNewVideos(maxIdFromJson) // 새로운 비디오 확인 재시작
-                    }, 5000) // 5초 후 재시작
+                    }, 3500) // 3.5초 후 재시작
                 } else {
                     Log.d("TherapyActivity", "새로운 비디오가 없습니다: ID = $maxId") // 로그 출력
                     playExistingVideo(maxId)
@@ -249,16 +252,37 @@ class TherapyActivity : FragmentActivity() {
         }
 
         override fun onPostExecute(result: String?) {
-            // 다운로드 완료 메시지 표시
-            if (result != null) {
-                Toast.makeText(context, "새 영상을 다운로드 중입니다!: $id", Toast.LENGTH_SHORT).show() // Toast 메시지로 변경
-                Log.d("TherapyActivity", "Downloaded video saved as: $result")
+            // 커스텀 토스트 레이아웃을 인플레이트
+            val inflater = (context as TherapyActivity).layoutInflater
+            val layout: View = inflater.inflate(R.layout.custom_toast, null)
 
-                (context as TherapyActivity).playNewVideo(id) // 새 비디오 재생 호출
+            // 커스텀 토스트의 텍스트 설정
+            val text: TextView = layout.findViewById(R.id.toast_text)
+            text.text = if (result != null) {
+                "새로운 테라피 아트를 가져오고 있어요!"
             } else {
-                Toast.makeText(context, "Failed to download video with ID: $id", Toast.LENGTH_SHORT).show()
+                "Failed to download video with ID: $id"
             }
+
+            // 커스텀 토스트 생성
+            val toast = Toast(context)
+            toast.duration = Toast.LENGTH_LONG // 기본 지속 시간 설정
+            toast.view = layout
+
+            // 토스트 위치 상단으로 설정 (100px을 30px으로 변경해 덜 내려오게)
+            toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, 30)
+
+            // 내려오는 애니메이션 적용
+            layout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_down))
+            toast.show()
+
+            // 6초 동안 보여주기 위해 Handler 사용
+            val handler = android.os.Handler()
+            handler.postDelayed({
+                layout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_up)) // 올라가는 애니메이션
+            }, 5500) // 6초 후 사라짐 (애니메이션이 끝나기 전 500ms 일찍 시작)
         }
+
     }
 
     override fun onBackPressed() {
