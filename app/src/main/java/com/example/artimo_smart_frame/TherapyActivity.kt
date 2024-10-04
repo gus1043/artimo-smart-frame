@@ -111,7 +111,7 @@ class TherapyActivity : FragmentActivity() {
                     }, 3500) // 3.5초 후 재시작
                 } else {
                     Log.d("TherapyActivity", "새로운 비디오가 없습니다: ID = $maxId") // 로그 출력
-                    playExistingVideo(maxId)
+//                    playExistingVideo(maxId)
                 }
             } catch (e: Exception) {
                 Log.e("MainActivity", "Error loading data", e)
@@ -135,6 +135,12 @@ class TherapyActivity : FragmentActivity() {
                     // IoT control
                     processIoT(maxId)
                 }
+
+                // 비디오가 끝났을 때 반복 재생
+                therapyArt.setOnCompletionListener { mediaPlayer ->
+                    mediaPlayer.isLooping = true // 비디오를 부드럽게 반복 재생
+                    mediaPlayer.start() // 영상이 끝나면 다시 시작
+                }
             }
         } else {
             Log.w("LegacyTherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
@@ -157,6 +163,11 @@ class TherapyActivity : FragmentActivity() {
                     // IoT control
                     processIoT(videoId)
                 }
+            }
+            // 비디오가 끝났을 때 반복 재생
+            therapyArt.setOnCompletionListener { mediaPlayer ->
+                mediaPlayer.isLooping = true // 비디오를 부드럽게 반복 재생
+                mediaPlayer.start() // 영상이 끝나면 다시 시작
             }
         } else {
             Log.w("TherapyActivity", "비디오 파일이 존재하지 않습니다: $file")
