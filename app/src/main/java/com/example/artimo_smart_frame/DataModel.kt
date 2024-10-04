@@ -8,6 +8,8 @@ data class DataModel(
         val title: String = "",
         val painter: String = "",
         val image: String = "",
-        val type: Int = 0
+        val type: Int = 0,
+        val hue: Int = 0,
+        val saturation: Int = 0
     )
 }
