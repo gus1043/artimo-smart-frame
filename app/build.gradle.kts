@@ -24,6 +24,14 @@ android {
         // Base_URL을 BuildConfig에 추가
         val baseUrl = properties["BASE_URL"]?.toString() ?: "https://default-url.com/"
         buildConfigField("String", "BASE_URL", baseUrl)
+
+        // IOT_ID을 BuildConfig에 추가
+        val iotID = properties["IOT_ID"]?.toString() ?: "https://default-url.com/"
+        buildConfigField("String", "IOT_ID", iotID)
+
+        // USER_ID을 BuildConfig에 추가
+        val userID = properties["USER_ID"]?.toString() ?: "https://default-url.com/"
+        buildConfigField("String", "USER_ID", userID)
     }
 
     buildTypes {

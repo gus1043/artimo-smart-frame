@@ -23,5 +23,11 @@ interface TherapyApiService {
 
     @POST("diary/set-light-color/{id}")
     suspend fun setIoT(@Path("id") id: String): Response<String>
+
+    @POST("v1/devices/{userId}/commands")
+    suspend fun sendDeviceCommand(
+        @Path("userId") userId: String,
+        @Body command: SmartThingsCommand
+    ): Response<ResponseBody>
 }
 

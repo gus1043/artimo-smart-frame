@@ -43,6 +43,8 @@ class ItemPresenter : Presenter() {
             val imageType = content.type
             val title = content.title
             val painter = content.painter
+            val hue = content.hue
+            val saturation = content.saturation
 
             // title과 painter를 콤마로 연결
             val combinedText = "$title \n$painter"
@@ -76,6 +78,8 @@ class ItemPresenter : Presenter() {
                         // 이미지 파일 이름을 전달
                         intent.putExtra("art", assetPath)
                         intent.putExtra("type", imageType.toString())
+                        intent.putExtra("hue", hue.toString())
+                        intent.putExtra("saturation", saturation.toString())
 
                         context?.startActivity(intent)
                     }
