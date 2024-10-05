@@ -32,10 +32,12 @@ import java.util.concurrent.TimeUnit
 
 class TherapyActivity : FragmentActivity() {
     private lateinit var gallarybtn: Button
+    private lateinit var therapyDescriptionBtn: Button
     private lateinit var therapyArt: VideoView
     private lateinit var overlay: View
     private lateinit var therapyApiService: TherapyApiService
     private lateinit var handler: AndroidHandler
+    private lateinit var infoComment: String
     private val checkInterval: Long = 3500 // 3.5초 간격
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,7 @@ class TherapyActivity : FragmentActivity() {
 
         therapyArt = findViewById(R.id.therapyart)
         gallarybtn = findViewById(R.id.gallarybtn)
+        therapyDescriptionBtn = findViewById(R.id.therapyDescriptionBtn)
         overlay = findViewById(R.id.overlay) // 투명한 검은 배경
 
         // SharedPreferences에서 비디오 번호 불러옴
@@ -76,6 +79,26 @@ class TherapyActivity : FragmentActivity() {
             startActivity(intent)
             finish()
         }
+
+        therapyDescriptionBtn.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(200).start()
+            } else {
+                v.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+            }
+        }
+
+        // '테라피 아트 설명' 버튼 클릭 리스너
+        therapyDescriptionBtn.setOnClickListener {
+            // infoComment를 토스트로 표시
+            if (::infoComment.isInitialized) { // Check if infoComment is set
+                val toast = Toast.makeText(this, infoComment, Toast.LENGTH_LONG)
+                toast.setGravity(Gravity.CENTER, 0, 0)
+                toast.show()
+            } else {
+                Toast.makeText(this, "설명 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun startCheckingForNewVideos(maxId: Int) {
@@ -92,10 +115,11 @@ class TherapyActivity : FragmentActivity() {
             try {
                 // 최신 비디오 주는 api에 연결
                 val dataTherapyModel = therapyApiService.getLatest()
-                Log.d("TherapyActivity", "API Response: $dataTherapyModel")
+//                Log.d("TherapyActivity", "API Response: $dataTherapyModel")
 
                 val maxIdFromJson = dataTherapyModel.result.id
-                val videoUrl = dataTherapyModel.result.sources
+                val videoUrl = dataTherapyModel.result.sources.videoUrl
+                infoComment = dataTherapyModel.result.sources.infoComment
 
                 if (maxIdFromJson > maxId) {
                     saveMaxId(maxIdFromJson)
@@ -301,6 +325,7 @@ class TherapyActivity : FragmentActivity() {
         if (gallarybtn.visibility == View.GONE && overlay.visibility == View.GONE) {
             overlay.visibility = View.VISIBLE
             gallarybtn.visibility = View.VISIBLE
+            therapyDescriptionBtn.visibility = View.VISIBLE
 
             // VideoView 포커스 제거 후 버튼에 포커스 설정
             therapyArt.clearFocus()
@@ -309,6 +334,7 @@ class TherapyActivity : FragmentActivity() {
             // 검은 배경과 버튼이 보이면 숨기고 기본 뒤로 가기 동작 수행
             overlay.visibility = View.GONE
             gallarybtn.visibility = View.GONE
+            therapyDescriptionBtn.visibility = View.GONE
             super.onBackPressed()
         }
     }

@@ -95,8 +95,8 @@ class MainActivity : FragmentActivity() {
                         dataTherapyModel.result.forEach { result ->
                             Log.d("MainActivity","${result}")
                             if (result.id > maxIdFromPrefs) {
-                                result.sources.firstOrNull()?.let {
-                                    downloadVideo(it, result.id)
+                                result.sources.firstOrNull()?.let { source ->
+                                    downloadVideo(source.videoUrl, result.id)
                                 }
                             }
                         }
