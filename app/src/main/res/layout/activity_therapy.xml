@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -5,18 +6,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".TherapyActivity">
 
-    <!-- VideoView -->
-    <VideoView
-        android:id="@+id/therapyart"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintWidth_percent="0.75"
+        app:layout_constraintHeight_percent="0.75"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:scaleType="fitXY"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- 투명도 50%의 검은 화면 -->
+        <VideoView
+            android:id="@+id/therapyart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside" />
+
+    </FrameLayout>
+
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
@@ -24,7 +32,6 @@
         android:background="#80000000"
         android:visibility="gone" />
 
-    <!-- '테라피 아트 히스토리' 버튼 -->
     <Button
         android:id="@+id/gallarybtn"
         android:layout_width="wrap_content"
@@ -45,7 +52,6 @@
         app:layout_constraintEnd_toStartOf="@id/therapyDescriptionBtn"
         android:layout_marginEnd="6dp"/>
 
-    <!-- '테라피 아트 설명' 버튼 -->
     <Button
         android:id="@+id/therapyDescriptionBtn"
         android:layout_width="wrap_content"

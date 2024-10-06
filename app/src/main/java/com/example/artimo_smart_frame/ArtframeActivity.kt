@@ -55,6 +55,9 @@ class ArtframeActivity : FragmentActivity() {
 
             imageView.setImageBitmap(rotatedBitmap)
 
+            val croppedBitmap = cropToAspectRatio(rotatedBitmap, 16, 9)
+            imageView.setImageBitmap(croppedBitmap)
+
         } catch (e: IOException) {
             e.printStackTrace()
             // Optionally, handle the error (e.g., set a default image)
@@ -139,4 +142,31 @@ class ArtframeActivity : FragmentActivity() {
             true
         )
     }
+
+    private fun cropToAspectRatio(bitmap: Bitmap, screenWidth: Int, screenHeight: Int): Bitmap {
+        val bitmapWidth = bitmap.width
+        val bitmapHeight = bitmap.height
+
+        // 새로운 비율 설정 (16:8 비율 기준)
+        val targetAspectRatio = 16f / 8f
+        val bitmapAspectRatio = bitmapWidth.toFloat() / bitmapHeight.toFloat()
+
+        var cropWidth = bitmapWidth
+        var cropHeight = bitmapHeight
+
+        if (bitmapAspectRatio > targetAspectRatio) {
+            // 이미지의 가로가 더 넓으면 가로를 자름 (상하 여백 조정)
+            cropWidth = (bitmapHeight * targetAspectRatio).toInt()
+        } else {
+            // 이미지의 세로가 더 길면 세로를 자름 (좌우 여백 조정)
+            cropHeight = (bitmapWidth / targetAspectRatio).toInt()
+        }
+
+        // 중앙을 기준으로 이미지를 자르고, 여백을 균일하게 맞추기
+        val xOffset = (bitmapWidth - cropWidth) / 2
+        val yOffset = (bitmapHeight - cropHeight) / 2
+
+        return Bitmap.createBitmap(bitmap, xOffset, yOffset, cropWidth, cropHeight)
+    }
+
 }
