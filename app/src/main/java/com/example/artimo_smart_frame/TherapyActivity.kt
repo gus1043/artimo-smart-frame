@@ -1,10 +1,12 @@
 package com.example.artimo_smart_frame
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -88,15 +90,34 @@ class TherapyActivity : FragmentActivity() {
             }
         }
 
-        // '테라피 아트 설명' 버튼 클릭 리스너
+// '테라피 아트 설명' 버튼 클릭 리스너
         therapyDescriptionBtn.setOnClickListener {
-            // infoComment를 토스트로 표시
-            if (::infoComment.isInitialized) { // Check if infoComment is set
-                val toast = Toast.makeText(this, infoComment, Toast.LENGTH_LONG)
-                toast.setGravity(Gravity.CENTER, 0, 0)
-                toast.show()
+            if (::infoComment.isInitialized) {
+                // Dialog 객체 생성
+                val dialog = Dialog(this)
+                dialog.setContentView(R.layout.custom_toast_long) // 기존 커스텀 토스트 레이아웃 사용
+                dialog.window?.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL) // 위치 설정
+                dialog.window?.attributes?.y = 60 // Y축 위치 조정
+
+                val toastText: TextView = dialog.findViewById(R.id.toast_text)
+                toastText.text = infoComment
+
+                // 애니메이션 적용
+                val slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_down)
+                val slideOut = AnimationUtils.loadAnimation(this, R.anim.slide_up)
+
+                val layout = dialog.findViewById<View>(R.id.custom_toast_container)
+                layout.startAnimation(slideIn) // 토스트가 나타날 때 애니메이션 실행
+
+                dialog.show()
+
+                // 10초 후에 애니메이션과 함께 사라지게 설정
+                android.os.Handler(Looper.getMainLooper()).postDelayed({
+                    layout.startAnimation(slideOut)
+                    dialog.dismiss()
+                }, 8000) // 10초 후에 사라지도록 설정
             } else {
-                Toast.makeText(this, "설명 정보를 불러오고 있습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "AI가 생각 중이에요!", Toast.LENGTH_SHORT).show()
             }
         }
     }
