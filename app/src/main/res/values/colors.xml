@@ -2,5 +2,6 @@
 <resources>
     <color name="brand_brown">#4C371E</color>
     <color name="brand_white">#FFFEFE</color>
+    <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 </resources>
