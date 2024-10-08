@@ -142,43 +142,6 @@ class ItemTherapyPresenter : Presenter() {
                     }
                 }
             }
-
-//            framebtn.setOnClickListener {
-//                val activity = viewHolder.view.context as? Activity
-//                Log.d("ItemTherapyPresenter", "videoUrl: $file") // URL 로그 확인
-//
-//                if (activity != null && file.exists()) {
-//                    val intent = Intent(activity, LegacyTherapyActivity::class.java).apply {
-//                        putExtra("file", file.toString())
-//                        putExtra("id", content.id)
-//                    }
-//                    activity.startActivity(intent)
-//                    activity.finish()
-//                } else {
-//                    if (activity == null) {
-//                        Log.e("ItemTherapyPresenter", "Activity is null")
-//                    }
-//                    if (!file.exists()) {
-//                        Log.e("ItemTherapyPresenter", "Video URL is null or empty")
-//                    }
-//                }
-//            }
-
-//            framebtn.setOnFocusChangeListener { v, hasFocus ->
-//                val button = v as Button
-//                if (hasFocus) {
-//                    // 포커스가 있을 때 framebtn의 배경 변경
-//                    button.setTextColor(Color.parseColor("#FFFF00"))
-//                } else {
-//                    // 포커스가 없을 때 기본 배경으로 변경
-//                    button.setTextColor(
-//                        ContextCompat.getColor(
-//                            button.context,
-//                                R.color.brand_white
-//                        )
-//                    )
-//                }
-//            }
         }
     }
     override fun onUnbindViewHolder(viewHolder: ViewHolder?) {
@@ -188,14 +151,12 @@ class ItemTherapyPresenter : Presenter() {
         // 입력 형식에 맞는 SimpleDateFormat 정의
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
         // 출력 형식 정의
-        val outputFormat = SimpleDateFormat("M/d", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("M월 d일", Locale.getDefault())
 
         // 문자열을 Date 객체로 변환
         val date = inputFormat.parse(inputDate)
         // 원하는 형식으로 출력
         return outputFormat.format(date)
     }
-
-
 
 }
