@@ -234,6 +234,7 @@ class TherapyActivity : FragmentActivity() {
 
     private fun downloadVideo(videoUrl: String, id: Int) {
         // 비디오 다운로드를 비동기로 처리
+
         DownloadTask(this, id).execute(videoUrl)
     }
 
@@ -337,6 +338,9 @@ class TherapyActivity : FragmentActivity() {
             handler.postDelayed({
                 layout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_up)) // 올라가는 애니메이션
             }, 5500) // 6초 후 사라짐 (애니메이션이 끝나기 전 500ms 일찍 시작)
+
+            (context as TherapyActivity).playNewVideo(id) // 새 비디오 재생 호출
+
         }
 
     }
