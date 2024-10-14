@@ -11,6 +11,10 @@
 - 기획 및 설계 : 24.04.01 ~ 24.08.14
 - 프로젝트 구현(경진대회) : 24.08.16 ~ 24.10.8
 
+## 관련 저장소  
+- [안드로이드TV APP 저장소 이동](https://github.com/kibwa-sosujiki/artimo-smart-frame)
+- [백엔드 저장소 이동](https://github.com/KimSH39/artimo-server)
+
 ## 기술 스택
 
 <div align=left>
